@@ -1,0 +1,1 @@
+node scripts/rea.mjs analyze-javascript-application  --integrity-policy   jso  128.85s user 5.33s system 120% cpu 1:51.14 total

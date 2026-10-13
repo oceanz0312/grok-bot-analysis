@@ -1,0 +1,160 @@
+{
+  "evidence_id": "ev_4930858f1e6edb1a7616025e8edf3737ade1c8437509dc6294175cedd9860279",
+  "subject": {
+    "name": "app.asar",
+    "digest": {
+      "sha256": "8dd7b6c4a58439d626a9a7b3766982b7c725db2bc1f6ff68a29fc1ec62ca4cf7"
+    },
+    "format": "asar",
+    "architecture": null,
+    "local_path": "/Applications/Grok Bot.app/Contents/Resources/app.asar"
+  },
+  "provider": {
+    "id": "rea-javascript-application",
+    "name": "REA JavaScript application analyzer",
+    "version": "1"
+  },
+  "predicate_type": "rea.javascript-application-analysis",
+  "operation": "analyze_javascript_application",
+  "parameters": {
+    "format": "auto",
+    "integrity_policy": "record-and-continue"
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "normalized_result": {
+    "input_path": "/Applications/Grok Bot.app/Contents/Resources/app.asar",
+    "format": "asar",
+    "root_artifact_sha256": "8dd7b6c4a58439d626a9a7b3766982b7c725db2bc1f6ff68a29fc1ec62ca4cf7",
+    "inventory_manifest_id": "agm_0e383ca9865dca514d1eb1636aeb05ac31681ff1671065b4a66592674e70c14f",
+    "inventory_graph_sha256": "099576a79d127e746bb6cb839148df4a300fc5e2841ddd8ee64f15efb5dbe351",
+    "integrity_contradictions": [
+      {
+        "contradiction_id": "ic_505f85b3f2b9518fe81a915abead0269fc553d0e746e8cf685f9d24925c486cb",
+        "occurrence_id": "occ_385878835fac170e91a6503b4b0508f344c30f69856d4b98761af253df8fbefd",
+        "parent_artifact_id": "art_6c8cb31a1f478b97de2201d8978799ecea6cfcb600144e8339121771e48eb284",
+        "logical_path": "dist/deps/cursor-proclist/build/Release/cursor_proclist.node",
+        "declared_sha256": "b97825485eb5aefc5ecc4e52ea44eef9b8f7b31605565a4cc1a3f81672d045d7",
+        "observed_sha256": "134a1b1a89b276a2a81e3a14ddc48d5841cc7080bb4d11994607ca649540d1f6",
+        "entry_kind": "file",
+        "unpacked": true,
+        "trust": "observed-untrusted",
+        "provenance": "container-integrity-metadata-versus-observed-bytes",
+        "limitations": [
+          "Observed bytes contradict declared integrity metadata and cannot support equivalence."
+        ]
+      },
+      {
+        "contradiction_id": "ic_03f78c7557da7ff18de09f5c5be2a83502f0d96bb0ba0af705d512aa8b33ae0d",
+        "occurrence_id": "occ_7583c5bab6db0c8d7962760d1bc1cbf2bbb3a8bfe6a5f89dd7916794c417414f",
+        "parent_artifact_id": "art_d507c9e5341423d0d75461f6fbad7d4d9d799ff1efb52a497b171eed8073cd3c",
+        "logical_path": "dist/deps/sand-notification-settings/build/Release/sand_notification_settings.node",
+        "declared_sha256": "d894339654200596e5408e2d98689e53402377756bb36c3708ed1e6098497e0e",
+        "observed_sha256": "c74c306078335b01c8523bdac82abb147f7334bdbf0589dbb6115a74579545da",
+        "entry_kind": "file",
+        "unpacked": true,
+        "trust": "observed-untrusted",
+        "provenance": "container-integrity-metadata-versus-observed-bytes",
+        "limitations": [
+          "Observed bytes contradict declared integrity metadata and cannot support equivalence."
+        ]
+      },
+      {
+        "contradiction_id": "ic_a15507c0892867fd3ad38a0035281e3bbaa1ec608c57fd15969e8a606d729ea6",
+        "occurrence_id": "occ_92c61930bcb7e66d5a40f0103aac2e8ba2274e7c11ef1b1633dd732460bc6c18",
+        "parent_artifact_id": "art_c330289f3b47d2e3a34b590c6c6c665e8f55c7fefb9efe1fe3ec66299a3debe8",
+        "logical_path": "dist/deps/tree-sitter-bash/prebuilds/darwin-arm64/tree-sitter-bash.node",
+        "declared_sha256": "90f07fa27a6139735465ea7b44ce6fc804c12cb6b64662492f9716fb8cb053fb",
+        "observed_sha256": "27552a748e3305b69699ff1c6d1b702adfffe4554178eae888e90e48b1832a5c",
+        "entry_kind": "file",
+        "unpacked": true,
+        "trust": "observed-untrusted",
+        "provenance": "container-integrity-metadata-versus-observed-bytes",
+        "limitations": [
+          "Observed bytes contradict declared integrity metadata and cannot support equivalence."
+        ]
+      },
+      {
+        "contradiction_id": "ic_01b23c894fadc55a9833a6acbd38bb31fa0bba8b9d3529bfcd5bc6506f1265f4",
+        "occurrence_id": "occ_c513c8dab91567094f122bf714826153444bf70dfa218b33a9acf36f517a5834",
+        "parent_artifact_id": "art_be88be45e1751884a43da7286b3fef62d9864ca9fbf0cc5c4dc630a626fe97ba",
+        "logical_path": "dist/deps/tree-sitter/build/Release/tree_sitter_runtime_binding.node",
+        "declared_sha256": "9ecabfec57d372bd4ab420379cb52054bbbb100beca2239f4dab691797349a6c",
+        "observed_sha256": "0171eea0cb99836718546bdc448b1f4e6ca3109a1392207b8e37e6d83fa93fc4",
+        "entry_kind": "file",
+        "unpacked": true,
+        "trust": "observed-untrusted",
+        "provenance": "container-integrity-metadata-versus-observed-bytes",
+        "limitations": [
+          "Observed bytes contradict declared integrity metadata and cannot support equivalence."
+        ]
+      },
+      {
+        "contradiction_id": "ic_fabb449f30b41905e27a140d18f59eba967d9f6021efe3ba98918d6b2094797a",
+        "occurrence_id": "occ_1cac6acae04488eb59e256a2f2d897523ccf175f51654cbcb21768479f114d55",
+        "parent_artifact_id": "art_1edea91754f65856563368c0ad62fe8a31beaff9dd7c4482781066200629aa5d",
+        "logical_path": "dist/native/sand-op-launcher",
+        "declared_sha256": "83e5fd816931a693053098f6db2d089370e09756520f394c15f1a0d22d89f15b",
+        "observed_sha256": "2ab3d14a98028f1f62e61b3decbc518d29731353f456c259cba10d66fb036e86",
+        "entry_kind": "file",
+        "unpacked": true,
+        "trust": "observed-untrusted",
+        "provenance": "container-integrity-metadata-versus-observed-bytes",
+        "limitations": [
+          "Observed bytes contradict declared integrity metadata and cannot support equivalence."
+        ]
+      },
+      {
+        "contradiction_id": "ic_f708c45168356ce14cce88076b8c4556ac32510c776c7f4dbf65647de30d9888",
+        "occurrence_id": "occ_2c70e86c87dad76be4d246a876ae535148748e5bcf19953e844078a749d3563f",
+        "parent_artifact_id": "art_1edea91754f65856563368c0ad62fe8a31beaff9dd7c4482781066200629aa5d",
+        "logical_path": "dist/native/sand-webauthn-signer",
+        "declared_sha256": "81260a317c39719da039e220b55919a035c4b58e4ed2a9b1bde0d416a5b4e50a",
+        "observed_sha256": "3c89f3f289b0d850e36fd270c90a7fcbc59c11707dac7b56e69c42fc2dd2a3fa",
+        "entry_kind": "file",
+        "unpacked": true,
+        "trust": "observed-untrusted",
+        "provenance": "container-integrity-metadata-versus-observed-bytes",
+        "limitations": [
+          "Observed bytes contradict declared integrity metadata and cannot support equivalence."
+        ]
+      }
+    ],
+    "summary": {
+      "browser_windows": 4,
+      "explicit_web_preferences": 11,
+      "preload_entrypoints": 0,
+      "context_bridge_apis": 6,
+      "exposed_api_members": 6,
+      "ipc": {
+        "operations": 15,
+        "literal_channels": 2,
+        "dynamic_channel_operations": 13,
+        "renderer_transmissions": 5,
+        "renderer_listeners": 4,
+        "main_handlers": 6,
+        "paired_renderer_transmissions": 0,
+        "ambiguous_renderer_transmissions": 0,
+        "unpaired_literal_renderer_transmissions": 1
+      },
+      "sender_validation_observations": 2,
+      "utility_processes": 2,
+      "resolved_utility_entrypoints": 0,
+      "native_addon_bindings": 2,
+      "resolved_native_addon_bindings": 2
+    },
+    "statistics": {
+      "relevant_files": 616,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 41155737,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 600,
+      "visited_ast_nodes": 7074090,
+      "findings": 5744,
+      "modules": 17,
+      "parse_failures": 0
+    }
+  },
+  "note": "Full output (~244MB, incl. graph/semantic_graph/limitations) omitted due to GitHub file size limit; regenerate with: node scripts/rea.mjs analyze-javascript-application --integrity-policy record-and-continue \"/Applications/Grok Bot.app/Contents/Resources/app.asar\""
+}
