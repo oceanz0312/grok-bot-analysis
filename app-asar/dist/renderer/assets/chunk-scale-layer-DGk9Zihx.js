@@ -1,0 +1,3 @@
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="36d745cf-00ff-4bc4-9948-06ab47e90764",e._sentryDebugIdIdentifier="sentry-dbid-36d745cf-00ff-4bc4-9948-06ab47e90764")}catch(e){}}();
+const t="will-change",o=".sand-settings-dialog";function r(e){e.style.getPropertyValue(t)===""&&e.style.setProperty(t,"transform")}function a(e){e.style.getPropertyValue(t)!==""&&e.style.removeProperty(t)}function l(e){const s=e.closest(o);s!==null&&r(s)}export{l as a,r as p,a as r};
+//# debugId=36d745cf-00ff-4bc4-9948-06ab47e90764
