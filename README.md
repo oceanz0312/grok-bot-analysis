@@ -4,13 +4,19 @@
 
 ![version](https://img.shields.io/badge/Grok%20Bot-0.70.2-black) ![method](https://img.shields.io/badge/方法-静态逆向%20%2B%20脱敏抓包-blue) ![rounds](https://img.shields.io/badge/分析-两轮-green) ![lang](https://img.shields.io/badge/文档-中文-red)
 
+<p align="center"><img src="docs/assets/01-hero.png" alt="拆开 Grok Bot：484 条中央 RPC 路由、167 个 Gateway 方法、4 个平面、7 条架构不变量" width="100%"></p>
+
 ## 五个最反直觉的发现
+
+<p align="center"><img src="docs/assets/03-findings.png" alt="五个最反直觉的发现" width="100%"></p>
 
 1. **"断网重连 60s→0.7s、合盖唤醒 23s→1s"靠的不是更快的服务器**，而是界面先画本地快照、"已发送"和"已完成"分成两件事，再加上事件驱动的连接探针。[→ 七条架构不变量](docs/replication/reference-architecture.md)
 2. **云电脑"秒开"不靠预热池，靠"默认睡着、按人的意图提前唤醒"。** 打字、聚焦会上报 presence，触发 `PRETHAW`；后台命令不唤醒 Box。抓包里没有找到 warm pool 的证据。[→ 为什么感觉快](docs/subsystems/performance-and-storage.md)
 3. **群聊本身也是一个 Agent。** `GrokBotAgentKind` 只有 `AGENT` 和 `ROOM` 两种取值；每轮由程序逐个成员编排，"说不说话"由各成员的模型决定，可以返回 `PASS`。[→ 多 Agent 与记忆](docs/subsystems/multiagent-memory-security.md)
 4. **密码"不进对话"只做到了一半。** 秘密值走独立通道，transcript 只留一个标记；但全量密钥仍会以环境变量的形式进入 Box，群里的 secret 卡片在客户端也没有做隔离。[→ 敏感操作隔离](docs/subsystems/multiagent-memory-security.md)
 5. **484 条中央 RPC 路由，其实只有 429 个唯一 operation。** `GrokBotService` 原样复用了 `SandBoxService` 的全部 55 条路由；Box Gateway 另有 167 个公开方法、27 个 SSE channel、40 个 host-only 方法。[→ API 目录](docs/reference/api-capability-catalog.md) · [Gateway](docs/reference/gateway-schema.md)
+
+<p align="center"><img src="docs/assets/04-why-fast.png" alt="快是架构不是算力：60s→0.7s、23s→1s、868ms→27ms、137MB→0.7MB 及其机制" width="49%"> <img src="docs/assets/05-multiagent-room.png" alt="群聊本身也是一个 Agent" width="49%"></p>
 
 ## 谁适合读，能得到什么
 
@@ -20,6 +26,10 @@
 
 ## 架构一图
 
+<p align="center"><img src="docs/assets/02-architecture.png" alt="四个平面：客户端、中央控制面、Box 执行面、本机执行面" width="100%"></p>
+
+<details><summary>文字版架构图（mermaid）</summary>
+
 ```mermaid
 flowchart LR
   U[用户 Mac<br/>Electron 客户端<br/>本地快照 · 连接管理] -->|ConnectRPC| C[中央控制面<br/>api2.cursor.sh<br/>账号 · Agent 注册表 · 对话日志 · 调度 · 密钥 · 计费]
@@ -28,6 +38,8 @@ flowchart LR
   U --> L[本机执行面<br/>local-exec 守护进程<br/>命令 · 文件 · iMessage · Computer Use]
   L -->|只向外连| C
 ```
+
+</details>
 
 **Box 干活，中心记账**：模型和工具在 Box 里跑，但对话日志、身份、调度和计费以中央为准。详见 [架构总览](docs/architecture/overview.md)。
 
@@ -39,6 +51,10 @@ flowchart LR
 | ⏱ 30 分钟 | [技术方案还原](docs/architecture/design-reconstruction.md) → 按兴趣选 [子系统](docs/subsystems/) |
 | 🛠 想自己做 personal agent | [参考架构（七条不变量）](docs/replication/reference-architecture.md) → [复刻蓝图（P0–P2 路线图）](docs/replication/blueprint.md) → [接口参考](docs/reference/) |
 
+## 数字一览
+
+<p align="center"><img src="docs/assets/06-numbers.png" alt="484 路由、429 operation、167 Gateway 方法、27 SSE、40 host-only、51 动态观察 RPC" width="100%"></p>
+
 ## 文档地图
 
 | 目录 | 内容 |
@@ -49,6 +65,7 @@ flowchart LR
 | [docs/replication/](docs/replication/) | [参考架构](docs/replication/reference-architecture.md) · [复刻蓝图](docs/replication/blueprint.md) |
 | [docs/methodology/](docs/methodology/) | [证据等级与观测方法](docs/methodology/evidence-levels.md) · [公开说法清单](docs/methodology/public-claims.md) |
 | [docs/appendix/](docs/appendix/) | [第一轮全栈报告](docs/appendix/round1-full-stack-report.md) · [动态观测计划（历史）](docs/appendix/dynamic-observation-plan.md) |
+| [docs/assets/](docs/assets/) | README 配图（PNG）与生成脚本 [gen.py](docs/assets/src/gen.py) |
 | [evidence/](evidence/) | [原始产物](evidence/artifacts/)（解包、格式化源码、脱敏抓包） · [REA 核验](evidence/rea/) · [抓包插件](evidence/tools/) |
 
 两轮分析：第一轮由 Codex 完成（接口目录、全栈报告、复刻蓝图、动态抓包），第二轮由 Claude Opus 完成（公开说法核验、子系统调研、技术方案还原）。两轮结论冲突时，以 [技术方案还原](docs/architecture/design-reconstruction.md) 附录 C 为准。
