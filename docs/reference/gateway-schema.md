@@ -2,7 +2,7 @@
 
 静态 schema 标识为 `sand-gateway` v1，生成源 `sand/src/shared/rpc/gateway.ts`，包含 167 个公开方法、27 个 SSE channel、40 个 host-only 方法和 367 个定义。
 
-证据：[Gateway 压缩 JSON Schema](formatted/node-agent-coordinator/main.cjs#L40738)、[Gateway 到中央 RPC 适配器](formatted/electron-main/main-app.cjs#L110600)。公开方法走 `POST /api/{method}`，事件走 `GET /events`；动态观察到的 Gateway 方法会标记 capture 行号。本文将它称为 Box-scoped Gateway，表示协议和 credential 与 Box 关联；客户端证据不能确定服务进程是否物理运行在 Box 内。
+证据：[Gateway 压缩 JSON Schema](../../evidence/artifacts/formatted/node-agent-coordinator/main.cjs#L40738)、[Gateway 到中央 RPC 适配器](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L110600)。公开方法走 `POST /api/{method}`，事件走 `GET /events`；动态观察到的 Gateway 方法会标记 capture 行号。本文将它称为 Box-scoped Gateway，表示协议和 credential 与 Box 关联；客户端证据不能确定服务进程是否物理运行在 Box 内。
 
 ## 关键调用链
 
@@ -31,7 +31,7 @@ React SandClient
 | `completeMcpOAuth` | {code, state} | null | 服务端完成 Mcp O Auth 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `createAgentWorkflow` | {id, spec} | array<SandSkill> | 服务端创建 Agent Workflow 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `deleteAgentWorkflow` | {id, workflowId} | array<SandSkill> | 服务端删除 Agent Workflow 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
-| `getAgentWorkflows` | {id} | array<SandSkill> | 服务端读取 Agent Workflows 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1360](runtime-api-shapes.jsonl#L1360) |
+| `getAgentWorkflows` | {id} | array<SandSkill> | 服务端读取 Agent Workflows 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1360](../../evidence/artifacts/runtime-api-shapes.jsonl#L1360) |
 | `getEffectiveMcpPlugins` | {} | array<SandEffectivePlugin> | 服务端读取 Effective Mcp Plugins 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `getMcpCatalog` | {} | array<SandMcpCatalogEntryView> | 服务端读取 Mcp Catalog 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `getMcpPluginLogo` | {url} | {dataUrl} \| null | 服务端读取 Mcp Plugin Logo 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
@@ -96,7 +96,7 @@ React SandClient
 | `isGlobalSearchEnabled` | {} | boolean | 服务端执行 Is Global Search Enabled 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `promptAcceptanceStatus` | GatewayAcceptanceStatusArgs(accountSlot, agentId, clientNonce, sessionId) | PromptAcceptanceLookup(empty) | 查询某次发送是否被接纳；适配到 GetGrokBotSendStatus。 | 本次未观察；静态 schema |
 | `resolveLocalToolPermission` | {agentId, entryId, requestId, resolution, sessionId} | null | 服务端处理 Local Tool Permission 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
-| `setWindowFocused` | {isFocused, surface} | null | 上报桌面窗口焦点，供 presence/通知策略使用。 | [观察 L1474](runtime-api-shapes.jsonl#L1474) |
+| `setWindowFocused` | {isFocused, surface} | null | 上报桌面窗口焦点，供 presence/通知策略使用。 | [观察 L1474](../../evidence/artifacts/runtime-api-shapes.jsonl#L1474) |
 | `startTeachRecording` | {agentId, entryPoint} | SandTeachRecordingStatus(agentId, maxDurationMs, startedAtMs, state) | 服务端启动 Teach Recording 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `stopTeachRecording` | {agentId, save} | SandTeachRecordingStatus(agentId, maxDurationMs, startedAtMs, state) | 服务端执行 Stop Teach Recording 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `transcribeAudio` | SandTranscribeAudioArgs(audioBase64, language, mimeType) | SandVoiceTranscription(text, transcriptionTimeMs) | 服务端执行 Transcribe Audio 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
@@ -170,7 +170,7 @@ React SandClient
 | `getAgentAutomations` | {id} | array<SandAutomation> | 服务端读取 Agent Automations 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `getAgentTasks` | {agentId} | array<SandAgentTask> | 服务端读取 Agent Tasks 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `getAgentTodos` | {id} | array<SandAgentTodo> | 服务端读取 Agent Todos 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
-| `getAsyncTasks` | {id} | array<SandAsyncTaskInfo> | 服务端读取 Async Tasks 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1362](runtime-api-shapes.jsonl#L1362) |
+| `getAsyncTasks` | {id} | array<SandAsyncTaskInfo> | 服务端读取 Async Tasks 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1362](../../evidence/artifacts/runtime-api-shapes.jsonl#L1362) |
 | `getSubagents` | {id} | array<SandSubagentInfo> | 服务端读取 Subagents 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `listAllAutomations` | {} | array<SandScheduledAutomation> | 服务端列举 All Automations 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `markAgentTaskDone` | {agentId, taskId} | array<SandAgentTask> | 服务端标记 Agent Task Done 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
@@ -205,13 +205,13 @@ React SandClient
 | 方法 | Args | Reply | 职责 | 动态证据 |
 |---|---|---|---|---|
 | `ensureForeverBox` | {id} | SandForeverBoxStatus \| null | 服务端确保存在或可用 Forever Box 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
-| `getForeverBoxStatus` | {id} | SandForeverBoxStatus \| null | 读取持久 Box、VNC、窗口、handoff、升级和磁盘压力状态。 | [观察 L1365](runtime-api-shapes.jsonl#L1365) |
-| `getHostSettings` | {} | SandHostSettings(autoReviewInstructions, computerUseModel, experimentOverrides, featureFlagOverrides, hasSeenOnboarding, hasSeenOnboardingAccountScope, localToolPermission, localToolPermissionByMachineId, mcpBoxServers, …+16) | 服务端读取 Host Settings 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1363](runtime-api-shapes.jsonl#L1363) |
+| `getForeverBoxStatus` | {id} | SandForeverBoxStatus \| null | 读取持久 Box、VNC、窗口、handoff、升级和磁盘压力状态。 | [观察 L1365](../../evidence/artifacts/runtime-api-shapes.jsonl#L1365) |
+| `getHostSettings` | {} | SandHostSettings(autoReviewInstructions, computerUseModel, experimentOverrides, featureFlagOverrides, hasSeenOnboarding, hasSeenOnboardingAccountScope, localToolPermission, localToolPermissionByMachineId, mcpBoxServers, …+16) | 服务端读取 Host Settings 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1363](../../evidence/artifacts/runtime-api-shapes.jsonl#L1363) |
 | `getHostStatus` | SandHostStatusArgs(includeManagedCapabilities) | SandHostStatus(capabilities, hostUpdateAvailable, hostVersion, isBusy, latestHostVersion) | 服务端读取 Host Status 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `handBackForeverBox` | {id, requestId, trigger} | null | 服务端执行 Hand Back Forever Box 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `isEgressTunnelAvailable` | {} | boolean | 服务端执行 Is Egress Tunnel Available 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `requestDiskSaverAudit` | {id} | SandDiskSaverAuditResult \| null | 服务端执行 Request Disk Saver Audit 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
-| `setHostSettings` | SandHostSettingsUpdate(autoReviewInstructions, computerUseModel, experimentOverrides, featureFlagOverrides, hasSeenOnboarding, localToolPermission, localToolPermissionByMachineId, localToolPermissionMachineId, mcpBoxServers, …+14) | SandHostSettings(autoReviewInstructions, computerUseModel, experimentOverrides, featureFlagOverrides, hasSeenOnboarding, hasSeenOnboardingAccountScope, localToolPermission, localToolPermissionByMachineId, mcpBoxServers, …+16) | 服务端设置 Host Settings 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1745](runtime-api-shapes.jsonl#L1745) |
+| `setHostSettings` | SandHostSettingsUpdate(autoReviewInstructions, computerUseModel, experimentOverrides, featureFlagOverrides, hasSeenOnboarding, localToolPermission, localToolPermissionByMachineId, localToolPermissionMachineId, mcpBoxServers, …+14) | SandHostSettings(autoReviewInstructions, computerUseModel, experimentOverrides, featureFlagOverrides, hasSeenOnboarding, hasSeenOnboardingAccountScope, localToolPermission, localToolPermissionByMachineId, mcpBoxServers, …+16) | 服务端设置 Host Settings 对应资源或流程；具体内部实现仅能由契约推断。 | [观察 L1745](../../evidence/artifacts/runtime-api-shapes.jsonl#L1745) |
 | `updateForeverBox` | {id} | SandForeverBoxStatus(agentId, diskPressure, handoff, hostUpdateAvailable, hostVersion, imageUpdateAvailable, pull, state, vncUrl, …+1) | 触发持久 Box 更新并返回新状态。 | 本次未观察；静态 schema |
 | `updateHostNow` | {force, includeErrorDetail} | SandHostUpdateResult(reason, started, version) | 服务端更新 Host Now 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 
@@ -226,7 +226,7 @@ React SandClient
 | `getAgentTranscriptWindow` | {beforeSeq, id, limit} | SandTranscriptWindow(entries, nextBeforeSeq, threadCounts) | 服务端读取 Agent Transcript Window 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `getConversationOutline` | {id} | array<SandConversationOutlineItem> | 服务端读取 Conversation Outline 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `readAttachmentChunk` | SandReadAttachmentChunkArgs(agentId, length, offset, path, videoPlayback) | SandAttachmentChunk \| null | 服务端读取 Attachment Chunk 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
-| `readAttachmentImage` | {fit, path, rendition, tile} | ResolvedImageAttachment \| null | 读取/转换图片附件，支持 rendition、fit 与 tile。 | [观察 L1364](runtime-api-shapes.jsonl#L1364) |
+| `readAttachmentImage` | {fit, path, rendition, tile} | ResolvedImageAttachment \| null | 读取/转换图片附件，支持 rendition、fit 与 tile。 | [观察 L1364](../../evidence/artifacts/runtime-api-shapes.jsonl#L1364) |
 | `readAttachmentText` | SandReadAttachmentTextArgs(agentId, path) | {bytes, kind} \| {bytes, kind, text, truncated} \| null | 服务端读取 Attachment Text 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `searchMedia` | {limit, query} | array<SandMediaMatch> | 服务端搜索 Media 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
 | `uploadAttachment` | SandUploadAttachmentArgs(agentId, bytesBase64, filename) | SandUploadAttachmentResult(path) | 服务端上传 Attachment 对应资源或流程；具体内部实现仅能由契约推断。 | 本次未观察；静态 schema |
@@ -347,7 +347,7 @@ Local Exec 不是“云真机 Farm”，也不是 167 个 Gateway 方法中的�
 - 静态实现：并发 8、backlog 64、poll 64；response batch 最多 256 帧或约 8 MiB；文件帧 4 MiB；35 秒 stall watchdog；submit 最多 3 次重试。
 - 设备 credential 与 account generation/ownership 绑定，旧 daemon 在 ownership 丢失时退出，避免跨账号接管。
 - 已观察 `/sand-box/local-exec-daemon-credential`、`IssueGrokBotUserComputerCredential` 和 `WatchGrokBotUserComputerRequests`；未观察到 Appium、模拟器池或移动云真机调度接口。
-- 证据：[Local Exec](formatted/local-exec-daemon/main.cjs#L155180)、[机器流 Proto](formatted/electron-main/proto.cjs#L63662)。
+- 证据：[Local Exec](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L155180)、[机器流 Proto](../../evidence/artifacts/formatted/electron-main/proto.cjs#L63662)。
 
 ## 审批、安全与凭证边界
 
