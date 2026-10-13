@@ -1,39 +1,32 @@
 # Grok Bot Analysis
 
-Grok Bot（`com.anysphere.sand`，内部代号 testAgent / Sand）0.70.2 的完整客户端、网络协议、Agent 架构与可复刻实现分析归档。
+Grok Bot（`com.anysphere.sand`，内部代号 testAgent / Sand）0.70.2 的客户端、网络协议、Agent 架构与可复刻方案分析归档。
 
-仓库包含两轮分析：
+两轮分析：第一轮由 Codex 完成（接口目录、全栈报告、复刻蓝图、动态抓包）；第二轮由 Claude Opus 在此基础上把公开说法落到代码，用 [REA](https://github.com/morluto/rea) 核验，并还原出原团队的技术方案。两轮结论冲突时，以第二轮 [技术方案还原](docs/architecture/design-reconstruction.md) 附录 C 为准。
 
-- **第一轮**（根目录）：Codex 产出的接口目录、全栈架构报告和复刻蓝图，以及解包产物、格式化源码、脱敏抓包等原始证据。
-- **第二轮**（[`grok-bot-deep-dive/`](grok-bot-deep-dive/)）：Claude Opus 在第一轮基础上的深度分析，把公开说法落到代码，用 REA 对应用包做比对核验，最后还原出原团队的技术方案文档。
+## 推荐阅读路线
 
-## 第一轮：接口与架构归档（根目录）
+1. [架构总览](docs/architecture/overview.md)：摘要、设计原则、四个平面的总体架构。
+2. [技术方案还原](docs/architecture/design-reconstruction.md)：完整设计文档（子系统、流程、部署、安全、演进）。
+3. 按需看子系统和接口参考。
+4. 想做同类产品：[参考架构](docs/replication/reference-architecture.md) → [复刻蓝图](docs/replication/blueprint.md)。
 
-| 报告 | 内容 |
+架构图：[diagram.canvas.tsx](docs/architecture/diagram.canvas.tsx)
+
+## 目录
+
+| 目录 | 内容 |
 |---|---|
-| [全栈架构报告](full-stack-architecture-report.md) | 客户端、中央控制面、Box、本机执行的整体架构，以及动态观察结论。 |
-| [客户端接口地图](client-interface-map.md) | 渲染层调用主进程的 301 个方法、preload 暴露面和信任边界。 |
-| [中央 API 完整目录](api-capability-catalog.md) | `api2.cursor.sh` 上 7 个 ConnectRPC 服务、484 条路由的出入参和职责。 |
-| [中央 API 能力矩阵](api-capability-matrix.md) | 同一批接口的能力矩阵视图。 |
-| [Box Gateway Schema](gateway-schema-summary.md) | Box 网关 167 个公开方法、27 个 SSE 事件通道、40 个只给宿主进程调用的方法。 |
-| [动态 API 矩阵](dynamic-api-matrix.md) | 抓包中实际出现过的接口（51 个中央 RPC、11 个网关接口）。 |
-| [复刻实现蓝图](replication-blueprint-draft.md) | 按服务边界拆分的复刻实现方案。 |
-| [动态观察方案](dynamic-observation-plan.md) | 抓包与运行时观察的方法、范围和脱敏规则。 |
+| [docs/architecture/](docs/architecture/) | 总览、技术方案还原、架构图 |
+| [docs/subsystems/](docs/subsystems/) | [Agent 运行时](docs/subsystems/agent.md) · [Box 云桌面](docs/subsystems/box.md) · [客户端控制面](docs/subsystems/client-control.md) · [本机执行与安全](docs/subsystems/local-exec-security.md) · [多 Agent / 记忆 / 敏感操作](docs/subsystems/multiagent-memory-security.md) · [性能与存储](docs/subsystems/performance-and-storage.md) |
+| [docs/reference/](docs/reference/) | [中央 API 能力目录（484 路由）](docs/reference/api-capability-catalog.md) · [Gateway Schema](docs/reference/gateway-schema.md) · [客户端接口与信任边界](docs/reference/client-interface-map.md) · [动态 API 矩阵](docs/reference/dynamic-api-matrix.md) |
+| [docs/replication/](docs/replication/) | 参考架构、复刻蓝图 |
+| [docs/methodology/](docs/methodology/) | [证据等级与观测方法](docs/methodology/evidence-levels.md) · [公开说法清单](docs/methodology/public-claims.md) |
+| [docs/appendix/](docs/appendix/) | [第一轮全栈报告](docs/appendix/round1-full-stack-report.md) · [动态观测计划（历史）](docs/appendix/dynamic-observation-plan.md) |
+| [evidence/artifacts/](evidence/artifacts/) | 原始产物：`app-asar/` 解包、`formatted/` 格式化源码、`javascript-*.json`、脱敏抓包 `runtime-*.jsonl` |
+| [evidence/rea/](evidence/rea/) · [evidence/tools/](evidence/tools/) | REA 核验结果、脱敏 mitmproxy 插件 |
 
-## 第二轮：深度分析（`grok-bot-deep-dive/`）
-
-完整清单和阅读顺序见 [grok-bot-deep-dive/README.md](grok-bot-deep-dive/README.md)。
-
-| 报告 | 内容 |
-|---|---|
-| [技术方案还原](grok-bot-deep-dive/grok-bot-technical-design-reconstruction.md) | **主报告**。按原团队设计文档的结构自上而下还原：设计原则、四个平面、11 个子系统、9 个关键流程、数据模型、容错、安全、性能、演进和已知问题。 |
-| [Personal Agent 参考架构](grok-bot-deep-dive/personal-agent-reference-architecture.md) | 公开说法逐条落到代码机制，提炼可供其他 personal agent 产品直接参考的架构方案。 |
-| [速度与存储笔记](grok-bot-deep-dive/notes-speed-and-storage.md) | 为什么感觉快；存储快满时自动清理（Disk Saver）的触发链路。 |
-| [多 Agent 与安全笔记](grok-bot-deep-dive/notes-multiagent-security.md) | 记忆模型、群聊、敏感操作隔离、"教任务"。 |
-| [公开说法清单](grok-bot-deep-dive/public-claims.md) | 官方说明和用户反馈的说法清单，是逐条核验的输入。 |
-| [子系统调研报告](grok-bot-deep-dive/recon/) | 客户端与控制面、Agent 运行时、Box 云桌面、本机执行与安全四份详细报告。 |
-| [REA 核验证据](grok-bot-deep-dive/rea/) | 应用包完整性、签名、`Info.plist` 的 REA 分析结果。 |
-| [架构总览画布](grok-bot-deep-dive/canvas/grok-bot-product-architecture.canvas.tsx) | Cursor Canvas 源码。 |
+子系统文档原为第二轮 `recon/` 子 Agent 中间报告，个别结论已在技术方案还原中更正（例如本机电脑操控走 `CUCursorService`，`CUGrokBotService` 只负责 iMessage 和通讯录）。
 
 ## 覆盖范围
 

@@ -2,7 +2,7 @@
 
 > 分析日期：2026-10-13  
 > 目标应用：`/Applications/testAgent.app`（产品名 `Grok Bot`，包内名 `sand`，版本 `0.70.2`）  
-> 原始用户路径 `/Users/bytedance/Documents/testAgent.app` 在后续阶段已不存在；静态解包和 REA Evidence 中仍保留该历史路径。  
+> 原始用户路径 `~/Documents/testAgent.app` 在后续阶段已不存在；静态解包和 REA Evidence 中仍保留该历史路径。  
 > 方法：打包产物静态分析、REA 6.4.0 Evidence、运行进程观察、应用代理层脱敏网络 shape 采集、客户端代码与 Proto/Gateway Schema 交叉验证。
 
 ## 1. 一句话结论
@@ -19,11 +19,11 @@ testAgent 不是一个普通的 Electron 聊天客户端，而是一套“桌面
 
 完整逐接口附录已经覆盖：
 
-- [客户端接口与信任边界：301 个 Main 声明方法 + 12 个 desktopMount 方法](client-interface-map.md)
-- [484 条中央 RPC 能力目录](api-capability-catalog.md)
-- [484 条 API 能力矩阵](api-capability-matrix.md)
-- [167 个 Gateway 方法、27 个 SSE channel、40 个 host-only 方法](gateway-schema-summary.md)
-- [动态请求/响应矩阵](dynamic-api-matrix.md)
+- [客户端接口与信任边界：301 个 Main 声明方法 + 12 个 desktopMount 方法](../reference/client-interface-map.md)
+- [484 条中央 RPC 能力目录](../reference/api-capability-catalog.md)
+- [484 条 API 能力矩阵](../reference/api-capability-catalog.md)
+- [167 个 Gateway 方法、27 个 SSE channel、40 个 host-only 方法](../reference/gateway-schema.md)
+- [动态请求/响应矩阵](../reference/dynamic-api-matrix.md)
 
 ## 2. 证据等级与边界
 
@@ -40,7 +40,7 @@ REA 对历史 ASAR 的 SHA-256 为 `8dd7b6c4a58439d626a9a7b3766982b7c725db2bc1f6
 
 - Summary Evidence：`ev_37ab48fa94e1a4a125600eb8e827ddbf3c13773acedb6dfd9cea62e1d80f0e99`
 - Parent application Evidence：`ev_b16bd6c5d19ac247f6013a27ed6b819ed335bd9faecc8ddacbee814a54ea8c98`
-- 原始摘要：[javascript-summary.json](javascript-summary.json)
+- 原始摘要：[javascript-summary.json](../../evidence/artifacts/javascript-summary.json)
 
 **限制**：应用 inventory 完成，但语义关系图是部分覆盖；若某关系未被 REA 图捕获，不能据此宣称它不存在。若结论来自静态代码，只能说明“实现被打包”，不能自动证明该路径在本次运行中被执行。部分 native 文件的 ASAR integrity metadata 与抽取字节不一致，因此本文不基于这些冲突文件做 native 行为断言。
 
@@ -50,9 +50,9 @@ REA 对历史 ASAR 的 SHA-256 为 `8dd7b6c4a58439d626a9a7b3766982b7c725db2bc1f6
 
 **覆盖限制**：这些数字是本次时间窗口的下界，不是“所有线上接口都已执行”。代理覆盖了已观察到的 Chromium/Electron/Node 请求，但无法证明不存在绕过代理的 native socket、未启用 feature、其他账号权限或未触发业务路径。
 
-脱敏原始记录：[runtime-api-shapes.jsonl](runtime-api-shapes.jsonl)
+脱敏原始记录：[runtime-api-shapes.jsonl](../../evidence/artifacts/runtime-api-shapes.jsonl)
 
-动态测试有一个重要边界：实际启动时使用了真实的 `/Users/bytedance/Library/Application Support/Grok Bot`，不是隔离 profile。因此：
+动态测试有一个重要边界：实际启动时使用了真实的 `~/Library/Application Support/Grok Bot`，不是隔离 profile。因此：
 
 - 窗口内观察到一次 `SendGrokBotUserMessage` 写调用，以及机器注册、1Password 同步等写调用。
 - 因为正文和值都被即时丢弃，无法知道是谁触发、发送了什么、是否由某次 UI 操作导致。
@@ -81,7 +81,7 @@ REA 对历史 ASAR 的 SHA-256 为 `8dd7b6c4a58439d626a9a7b3766982b7c725db2bc1f6
 | 可观测性 | OpenTelemetry、Sentry、Statsig | trace、错误、指标、feature flag |
 | 本机原生能力 | 打包的 Swift `CUGrokBotService`；Local Exec 另声明外置 `CUCursorService` | 前者由 Main 与 Local Exec 复用于 Messages/Contacts；后者通过 Unix socket 承载 GUI Computer Use，两套 helper 必须分别取证 |
 
-包元数据见 [package.json](app-asar/package.json#L1)。核心状态并非“React Query 到处请求”，而是常驻的 domain client 将网络流、持久化和 UI 订阅统一起来。
+包元数据见 [package.json](../../evidence/artifacts/app-asar/package.json#L1)。核心状态并非“React Query 到处请求”，而是常驻的 domain client 将网络流、持久化和 UI 订阅统一起来。
 
 ## 5. 客户端进程与信任边界
 
@@ -117,13 +117,13 @@ flowchart TB
 
 ### 5.1 Renderer
 
-**观察**：Renderer 负责展示和领域资源订阅，不直接获得 Node 能力。主窗口设置 `contextIsolation=true`、`nodeIntegration=false`、`sandbox=true`，见 [main-core.cjs](formatted/electron-main/main-core.cjs#L32078)。
+**观察**：Renderer 负责展示和领域资源订阅，不直接获得 Node 能力。主窗口设置 `contextIsolation=true`、`nodeIntegration=false`、`sandbox=true`，见 [main-core.cjs](../../evidence/artifacts/formatted/electron-main/main-core.cjs#L32078)。
 
 **设计意义**：即使某段对话 Markdown、网页预览或插件内容存在问题，也不能直接调用文件系统或任意 IPC。
 
 ### 5.2 Preload
 
-**观察**：Preload 的 `desktop.main` schema 声明 301 个唯一方法。组装时隐藏 `stageAttachmentPath`、新增通用 `subscribe`，因此运行时 `desktop.main` 仍是 301 个 callable property；另有 `desktop.local` 5 个本地辅助方法、`desktopMount` 12 个方法、`coordinatorPort` 和 `sandRenderTrace` 两条 MessagePort 面。它没有把裸 `ipcRenderer` 暴露给页面。入口见 [preload.cjs](formatted/electron-preload/preload.cjs#L4272)，完整分类见 [客户端接口地图](client-interface-map.md)。
+**观察**：Preload 的 `desktop.main` schema 声明 301 个唯一方法。组装时隐藏 `stageAttachmentPath`、新增通用 `subscribe`，因此运行时 `desktop.main` 仍是 301 个 callable property；另有 `desktop.local` 5 个本地辅助方法、`desktopMount` 12 个方法、`coordinatorPort` 和 `sandRenderTrace` 两条 MessagePort 面。它没有把裸 `ipcRenderer` 暴露给页面。入口见 [preload.cjs](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4272)，完整分类见 [客户端接口地图](../reference/client-interface-map.md)。
 
 **推断**：这里同时承担类型收窄、sender/trust policy 和版本兼容边界，是客户端安全模型的重要一层。
 
@@ -131,11 +131,11 @@ flowchart TB
 
 **观察**：Main 分 `main-core` 与 `main-app` 两阶段：前者尽早建立窗口、安全策略、日志、更新、认证等基础设施；后者装配 Agent、Box、MCP、Voice、Local Exec 等业务能力。
 
-**观察**：新窗口默认拒绝，跨 origin 导航转系统浏览器，见 [main-core.cjs](formatted/electron-main/main-core.cjs#L32141)。
+**观察**：新窗口默认拒绝，跨 origin 导航转系统浏览器，见 [main-core.cjs](../../evidence/artifacts/formatted/electron-main/main-core.cjs#L32141)。
 
 ### 5.4 Node Agent Coordinator
 
-**观察**：Main 通过 Electron `utilityProcess.fork` 启动 `sand-node-agent-coordinator`，创建三条 MessagePort：control、renderer-data、main-data，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L100084)。运行时 PID 81591 加载 tree-sitter，与 Coordinator 职责高度一致。
+**观察**：Main 通过 Electron `utilityProcess.fork` 启动 `sand-node-agent-coordinator`，创建三条 MessagePort：control、renderer-data、main-data，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L100084)。运行时 PID 81591 加载 tree-sitter，与 Coordinator 职责高度一致。
 
 Coordinator 负责：
 
@@ -203,7 +203,7 @@ sequenceDiagram
 
 ### 6.1 客户端发送语义
 
-**观察**：Gateway 普通命令为 `POST /api/<method>`；Box 路径的发送走专用 `POST /api/sendPrompt`。请求代码见 [Coordinator](formatted/node-agent-coordinator/main.cjs#L41355)，发送幂等和有条件重试见 [Coordinator](formatted/node-agent-coordinator/main.cjs#L41668)。客户端还包含一个 server-authoritative 适配器，直接把 `sendPrompt` 映射到中央 `SendGrokBotUserMessage`，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L110630)。本次动态窗口观察到后者，没有观察到 Gateway `/api/sendPrompt`，所以不能把这次消息写归因于 Box Gateway。
+**观察**：Gateway 普通命令为 `POST /api/<method>`；Box 路径的发送走专用 `POST /api/sendPrompt`。请求代码见 [Coordinator](../../evidence/artifacts/formatted/node-agent-coordinator/main.cjs#L41355)，发送幂等和有条件重试见 [Coordinator](../../evidence/artifacts/formatted/node-agent-coordinator/main.cjs#L41668)。客户端还包含一个 server-authoritative 适配器，直接把 `sendPrompt` 映射到中央 `SendGrokBotUserMessage`，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L110630)。本次动态窗口观察到后者，没有观察到 Gateway `/api/sendPrompt`，所以不能把这次消息写归因于 Box Gateway。
 
 `sendPrompt` 关键字段包括 agent、session、attachments、MCP、machine、时间、initiator 和 `clientNonce`。重试只在“确定尚未 dispatch”或 Gateway 明确证明支持去重时进行；Endpoint 在发送中途变化会中止重试。
 
@@ -211,7 +211,7 @@ sequenceDiagram
 
 ### 6.2 回传语义
 
-**观察**：Gateway 通过 `GET /events` 建立 SSE，带 stall watchdog、echo probe、指数退避和网络恢复探针，见 [Coordinator](formatted/node-agent-coordinator/main.cjs#L41779)。中央服务另有 `WatchGrokBotTranscripts` server stream，可返回 rows、cleared、heartbeat、agent state、computer actions 等。
+**观察**：Gateway 通过 `GET /events` 建立 SSE，带 stall watchdog、echo probe、指数退避和网络恢复探针，见 [Coordinator](../../evidence/artifacts/formatted/node-agent-coordinator/main.cjs#L41779)。中央服务另有 `WatchGrokBotTranscripts` server stream，可返回 rows、cleared、heartbeat、agent state、computer actions 等。
 
 **推断**：SSE/stream 只是传输层；权威状态是可重放 Transcript Journal 和 roster/state store。断线后客户端通过 cursor/sequence 补齐，而不是信任“从断点继续的 socket”。
 
@@ -231,7 +231,7 @@ sequenceDiagram
 
 ### 7.2 `BOX` 与 `TEMPORAL`
 
-**观察**：打包代码显式出现 `box`、`temporal` 两类 harness/creation route；创建路径可返回 `{kind: "temporal"}` 或 `{kind: "box"}`，服务端创建 RPC 也使用 `TEMPORAL` 枚举，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L100605)。CreateAgent 还会声明 `supportsTemporalHarness: true`，见 [Coordinator](formatted/node-agent-coordinator/main.cjs#L41543)。客户端同时包含 harness migration 状态和 Gateway/server transcript provider 切换。
+**观察**：打包代码显式出现 `box`、`temporal` 两类 harness/creation route；创建路径可返回 `{kind: "temporal"}` 或 `{kind: "box"}`，服务端创建 RPC 也使用 `TEMPORAL` 枚举，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L100605)。CreateAgent 还会声明 `supportsTemporalHarness: true`，见 [Coordinator](../../evidence/artifacts/formatted/node-agent-coordinator/main.cjs#L41543)。客户端同时包含 harness migration 状态和 Gateway/server transcript provider 切换。
 
 **推断**：
 
@@ -262,9 +262,9 @@ sequenceDiagram
 
 ### 8.1 本地可靠性
 
-**观察**：客户端包含 `send-journal`、draft、roster、selection、UI layout 等持久状态。`transcript.replicas` 明确标记为 `host-durable`、账号敏感的有界快照，容量上限为 200 entries、768 KiB，见 [Renderer bundle](app-asar/dist/renderer/assets/index.eager-app-fbmFpqqH.js#L154)。这只支持“本地保存有限 Transcript replica”，不能据此推导更强的日志语义。
+**观察**：客户端包含 `send-journal`、draft、roster、selection、UI layout 等持久状态。`transcript.replicas` 明确标记为 `host-durable`、账号敏感的有界快照，容量上限为 200 entries、768 KiB，见 [Renderer bundle](../../evidence/artifacts/app-asar/dist/renderer/assets/index.eager-app-fbmFpqqH.js#L154)。这只支持“本地保存有限 Transcript replica”，不能据此推导更强的日志语义。
 
-**观察**：Main 中另有名为 `checkpoint` 的结构，内容是日志计数器和最多 1000 条 records，用于结构化日志/指标的 spill 与重放，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L121523)。它不是 Transcript checkpoint。
+**观察**：Main 中另有名为 `checkpoint` 的结构，内容是日志计数器和最多 1000 条 records，用于结构化日志/指标的 spill 与重放，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L121523)。它不是 Transcript checkpoint。
 
 **未知**：`send-journal` 和其他持久 slice 的具体底层存储引擎、落盘格式，以及服务端 Transcript journal 的数据库实现。
 
@@ -272,13 +272,13 @@ sequenceDiagram
 
 ### 8.2 上下文压缩
 
-**观察**：Statsig 的 `client_speculative_summarization_config` schema 包含 token 阈值、容差、inflight 最大年龄和 stream timeout；客户端 fallback 值分别为 70%、5%、5 分钟、5 分钟，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L57999) 和 [main-app.cjs](formatted/electron-main/main-app.cjs#L59880)。远端 Statsig 配置可以覆盖这些 fallback，不能把 70% 写成线上固定阈值。
+**观察**：Statsig 的 `client_speculative_summarization_config` schema 包含 token 阈值、容差、inflight 最大年龄和 stream timeout；客户端 fallback 值分别为 70%、5%、5 分钟、5 分钟，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L57999) 和 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L59880)。远端 Statsig 配置可以覆盖这些 fallback，不能把 70% 写成线上固定阈值。
 
 **推断**：在真正达到模型上下文上限前并行生成摘要；如果原对话继续增长或摘要失败，可以丢弃推测结果而不阻塞主运行。
 
 ### 8.3 用户偏好提炼
 
-**观察**：打包的 `user_intent_config` fallback/template 最多读取 100 个近期 transcript；只允许把至少 4 个会话支持的显式纠正/稳定模式写入 `index.md`，并明确禁止从缺失行为推断偏好，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L60502)。远端配置可覆盖或关闭该路径，这不证明本次运行已执行偏好提炼。
+**观察**：打包的 `user_intent_config` fallback/template 最多读取 100 个近期 transcript；只允许把至少 4 个会话支持的显式纠正/稳定模式写入 `index.md`，并明确禁止从缺失行为推断偏好，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L60502)。远端配置可覆盖或关闭该路径，这不证明本次运行已执行偏好提炼。
 
 **推断**：这是“慢速、证据门槛高”的长期偏好层，刻意与实时 Transcript 和项目规则分开，降低一次性对话污染长期记忆的风险。
 
@@ -330,7 +330,7 @@ Gateway 对 JSON 请求和响应按 schema 校验。动态观察到 7 个 public
 
 ## 10. 服务端逐能力拆解
 
-下表给出主能力域。每条具体 RPC 的 request/response 字段与职责见 [API 能力目录](api-capability-catalog.md)。
+下表给出主能力域。每条具体 RPC 的 request/response 字段与职责见 [API 能力目录](../reference/api-capability-catalog.md)。
 
 | 能力域 | 客户端/接口观察 | 服务端很可能做什么 | 可复刻技术候选 |
 |---|---|---|---|
@@ -367,9 +367,9 @@ Gateway 对 JSON 请求和响应按 schema 校验。动态观察到 7 个 public
 - noVNC/websockify：6080（主）、6081（fork）
 - egress tunnel：8790/8791
 
-端口常量见 [main-app.cjs](formatted/electron-main/main-app.cjs#L93098)。
+端口常量见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L93098)。
 
-**静态观察**：`EnsureSandBoxResponse` schema 包含 cluster、pod、network token、exec URL、VNC URL、gateway URL/token、run state、image 等字段，见 [proto.cjs](formatted/electron-main/proto.cjs#L63664)。
+**静态观察**：`EnsureSandBoxResponse` schema 包含 cluster、pod、network token、exec URL、VNC URL、gateway URL/token、run state、image 等字段，见 [proto.cjs](../../evidence/artifacts/formatted/electron-main/proto.cjs#L63664)。
 
 **动态观察限制**：本次确实观察到 `EnsureSandBox` 请求和 HTTP 200/gzip 响应，但采集器没有解压响应体；出现的非法 `wire_type: 7` 是把压缩字节误当 Protobuf 的结果，不能用于确认任何响应字段。动态证据只确认 endpoint、状态和压缩形态，字段结论来自静态 Proto。
 
@@ -377,15 +377,15 @@ Gateway 对 JSON 请求和响应按 schema 校验。动态观察到 7 个 public
 
 ### 11.2 用户设备与移动端边界
 
-**观察**：机器注册和列表模型明确允许 `desktop`、`ios`、`android`，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L42638) 和 [main-app.cjs](formatted/electron-main/main-app.cjs#L48640)。这证明客户端契约为 iOS/Android 用户设备预留了注册与 mobile-local-tool 表面，但本次未动态验证移动设备连接、消息或通知能力。
+**观察**：机器注册和列表模型明确允许 `desktop`、`ios`、`android`，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L42638) 和 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L48640)。这证明客户端契约为 iOS/Android 用户设备预留了注册与 mobile-local-tool 表面，但本次未动态验证移动设备连接、消息或通知能力。
 
-**观察**：Local Exec 对手机明确禁用 Shell、Read、AwaitShell 和文件传输，见 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L81903)。这说明移动设备能力集与桌面设备不同。
+**观察**：Local Exec 对手机明确禁用 Shell、Read、AwaitShell 和文件传输，见 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L81903)。这说明移动设备能力集与桌面设备不同。
 
 **未知**：是否另有 Android/iOS 云真机池、模拟器调度服务或移动端 Computer Use 数据面。注册移动用户设备不能作为云真机证据。
 
 ### 11.3 VNC 客户端安全
 
-**观察**：VNC 使用独立持久 partition `persist:sand-forever-box`。`port_token` / `network_token` 从 URL 转为请求 Header，减少 token 在子资源 URL 中传播；webview 强制 `nodeIntegration=false`、`contextIsolation=true`、`sandbox=true`。只有可信 VNC webview 能调用剪贴板桥，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L125700)。
+**观察**：VNC 使用独立持久 partition `persist:sand-forever-box`。`port_token` / `network_token` 从 URL 转为请求 Header，减少 token 在子资源 URL 中传播；webview 强制 `nodeIntegration=false`、`contextIsolation=true`、`sandbox=true`。只有可信 VNC webview 能调用剪贴板桥，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L125700)。
 
 ### 11.4 后端可能实现
 
@@ -410,7 +410,7 @@ Gateway 对 JSON 请求和响应按 schema 校验。动态观察到 7 个 public
 1. Box Gateway：`GET /local-exec/requests` SSE 下发，`POST /local-exec/responses` 回传。
 2. Server-authoritative bridge：`IssueGrokBotUserComputerCredential`、`WatchGrokBotUserComputerRequests`、`OpenGrokBotUserComputerRequest`，以及 poll/submit 批模式。
 
-请求 frame 包含 `exec`、`upload`、`download`、`cancel`、`retire-approval`、`messages-op`、`discover-ai-tool`；Hello 回传 local root、terminals folder、computer ID、label、capabilities。静态协议见 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L81896)，传输与重连见 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L128498)。
+请求 frame 包含 `exec`、`upload`、`download`、`cancel`、`retire-approval`、`messages-op`、`discover-ai-tool`；Hello 回传 local root、terminals folder、computer ID、label、capabilities。静态协议见 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L81896)，传输与重连见 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L128498)。
 
 **观察**：权限至少有 always allow / needs approval / blocked 三态，并与 machine、action、approval ID 绑定。Daemon 支持 shell/read/write/delete/grep/ls、后台 shell、文件传输、Messages、Computer Use、MCP、subagent/AI tool discovery 等。
 
@@ -426,11 +426,11 @@ Gateway 对 JSON 请求和响应按 schema 校验。动态观察到 7 个 public
 
 #### Main 与 Local Exec：Messages / Contacts helper
 
-**观察**：Electron Main 定位和安装 `Grok Bot Computer Use.app`，其直接调用表只暴露 Messages/Contacts 相关 verbs：`messages/snapshot`、`messages/copy-attachment`、`messages/send`、`messages/check-permissions`、`messages/find-contacts`、`messages/resolve-handles`，见 [main-app.cjs](formatted/electron-main/main-app.cjs#L79548) 和 [main-app.cjs](formatted/electron-main/main-app.cjs#L79738)。Local Exec bundle 也复用同一 sidecar client 作为 `messages-op` 的默认 executor，见 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L128112)。这些证据不能直接推出该 helper 也执行截图、点击和输入。
+**观察**：Electron Main 定位和安装 `Grok Bot Computer Use.app`，其直接调用表只暴露 Messages/Contacts 相关 verbs：`messages/snapshot`、`messages/copy-attachment`、`messages/send`、`messages/check-permissions`、`messages/find-contacts`、`messages/resolve-handles`，见 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L79548) 和 [main-app.cjs](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L79738)。Local Exec bundle 也复用同一 sidecar client 作为 `messages-op` 的默认 executor，见 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L128112)。这些证据不能直接推出该 helper 也执行截图、点击和输入。
 
 #### Local Exec：外置 GUI Computer Use helper
 
-**观察**：Local Exec Daemon 默认定位另一个 `Cursor Computer Use.app`，默认可执行文件为 `~/.cursor/cursor-computer-use/Cursor Computer Use.app/Contents/MacOS/CUCursorService`，并从 `~/Library/Application Support/cursor-computer-use/service.json` 读取 Unix socket 路径；`CUA_SERVICE_APP` / `CUA_APP_SUPPORT_DIR` 可覆盖这两个位置。它以 newline-delimited JSON RPC 调用 `tools/call`，并单独实现 `control/start` / `control/release`，见 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L120624)。其 JS 协议面支持：
+**观察**：Local Exec Daemon 默认定位另一个 `Cursor Computer Use.app`，默认可执行文件为 `~/.cursor/cursor-computer-use/Cursor Computer Use.app/Contents/MacOS/CUCursorService`，并从 `~/Library/Application Support/cursor-computer-use/service.json` 读取 Unix socket 路径；`CUA_SERVICE_APP` / `CUA_APP_SUPPORT_DIR` 可覆盖这两个位置。它以 newline-delimited JSON RPC 调用 `tools/call`，并单独实现 `control/start` / `control/release`，见 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L120624)。其 JS 协议面支持：
 
 - screenshot；
 - click、move、mouse button、drag、scroll；
@@ -438,7 +438,7 @@ Gateway 对 JSON 请求和响应按 schema 校验。动态观察到 7 个 public
 - `control/start` / `control/release`；
 - permission check。
 
-动作与权限 schema 见 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L120269) 和 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L120404)。
+动作与权限 schema 见 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L120269) 和 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L120404)。
 
 **观察限制**：`CUCursorService` 不在 `/Applications/testAgent.app` 包内，本机默认安装路径也未找到该 artifact。因此本文只能确认 Local Exec 对它的路径、权限字段与 RPC 契约，不能验证该 native helper 的实现语言、完整能力或本次运行是否启动。
 
@@ -446,7 +446,7 @@ Gateway 对 JSON 请求和响应按 schema 校验。动态观察到 7 个 public
 
 ### 12.3 云端 Computer Use
 
-**观察**：Linux Box 的 Computer Use 使用 X11/`xdotool`、`xprop` 等路径，支持固定 API 分辨率与显示坐标换算、cursor 类型、动作事件和截图。见 [local-exec-daemon](formatted/local-exec-daemon/main.cjs#L119980)。
+**观察**：Linux Box 的 Computer Use 使用 X11/`xdotool`、`xprop` 等路径，支持固定 API 分辨率与显示坐标换算、cursor 类型、动作事件和截图。见 [local-exec-daemon](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L119980)。
 
 **结论**：同一个高层 Computer Use action schema，在 macOS 本机映射到外置 `CUCursorService` RPC，在 Linux Box 映射到 X11/xdotool/native X11。客户端以这一适配层隐藏平台差异；macOS helper 的底层 native 实现在本次证据中仍为未知。
 
@@ -703,18 +703,18 @@ P1 建议扩到 10–14 FTE，补安全、数据/检索和 integrations。包含
 
 ## 20. REA 仓库在本次分析中的作用
 
-REA 仓库已下载到 `/Users/bytedance/rea`，版本 6.4.0。它是一个面向 Agent/CLI 的统一逆向工程 MCP：可分析 native binary、JavaScript/Electron、.NET、APK、网站、保存的网络捕获等，并以 Evidence、coverage、limitations、unknowns 的形式返回结果。
+REA 仓库已下载到 `~/rea`，版本 6.4.0。它是一个面向 Agent/CLI 的统一逆向工程 MCP：可分析 native binary、JavaScript/Electron、.NET、APK、网站、保存的网络捕获等，并以 Evidence、coverage、limitations、unknowns 的形式返回结果。
 
 本次适合 REA 的部分是 ASAR/Electron 静态结构和证据账本；REA 6.4 的被动 Electron 页面观察不覆盖所有 Main/utility process 网络，因此完整接口监听另外使用了“只保留结构、不保留值”的本地代理。REA 的定位说明见 [README.md](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/README.md#L50)。
 
 ## 21. 附录索引
 
-- [客户端接口地图：301 个 Main 声明方法、12 个 desktopMount 方法与 MessagePort 边界](client-interface-map.md)
-- [中央 API 能力目录：484/484 路由](api-capability-catalog.md)
-- [中央 API 能力矩阵](api-capability-matrix.md)
-- [Gateway Schema：167 public / 27 SSE / 40 host-only](gateway-schema-summary.md)
-- [动态 API 矩阵：51 个中央 RPC、11 个 Gateway endpoint](dynamic-api-matrix.md)
-- [脱敏动态 shape 原始记录](runtime-api-shapes.jsonl)
-- [REA JavaScript summary Evidence](javascript-summary.json)
-- [独立复刻蓝图草案（含接口草案、SLO、团队与实验）](replication-blueprint-draft.md)
+- [客户端接口地图：301 个 Main 声明方法、12 个 desktopMount 方法与 MessagePort 边界](../reference/client-interface-map.md)
+- [中央 API 能力目录：484/484 路由](../reference/api-capability-catalog.md)
+- [中央 API 能力矩阵](../reference/api-capability-catalog.md)
+- [Gateway Schema：167 public / 27 SSE / 40 host-only](../reference/gateway-schema.md)
+- [动态 API 矩阵：51 个中央 RPC、11 个 Gateway endpoint](../reference/dynamic-api-matrix.md)
+- [脱敏动态 shape 原始记录](../../evidence/artifacts/runtime-api-shapes.jsonl)
+- [REA JavaScript summary Evidence](../../evidence/artifacts/javascript-summary.json)
+- [独立复刻蓝图草案（含接口草案、SLO、团队与实验）](../replication/blueprint.md)
 

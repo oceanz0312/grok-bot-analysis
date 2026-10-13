@@ -1,4 +1,4 @@
 *.node binary
-app-asar/dist/native/* binary
-javascript-evidence.json -diff
-javascript-summary-request.json -diff
+evidence/artifacts/app-asar/dist/native/* binary
+evidence/artifacts/javascript-evidence.json -diff
+evidence/artifacts/javascript-summary-request.json -diff

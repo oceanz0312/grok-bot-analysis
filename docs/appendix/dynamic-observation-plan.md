@@ -1,6 +1,6 @@
 # Grok Bot / testAgent.app 动态被动观测方案（历史计划）
 
-> 此文件记录执行前方案，状态说明已过时。实际观测范围、真实 profile 边界和最终结果以 [主报告](full-stack-architecture-report.md) 与 [动态 API 矩阵](dynamic-api-matrix.md) 为准。
+> 此文件记录执行前方案，状态说明已过时。实际观测范围、真实 profile 边界和最终结果以 [主报告](round1-full-stack-report.md) 与 [动态 API 矩阵](../reference/dynamic-api-matrix.md) 为准。
 
 > 计划撰写时状态：仅完成离线可行性与工具协议核验；当时尚未启动应用。后续已经执行动态观测。
 >
@@ -64,7 +64,7 @@ TESTAGENT_INSPECT_PORT=29324
 /usr/bin/sandbox-exec \
   -p '(version 1)(allow default)(deny network-outbound)' \
   /usr/bin/env SAND_USER_DATA_DIR="$TESTAGENT_OBS_ROOT" \
-  '/Users/bytedance/Documents/testAgent.app/Contents/MacOS/Grok Bot' \
+  '~/Documents/testAgent.app/Contents/MacOS/Grok Bot' \
   --user-data-dir="$TESTAGENT_OBS_ROOT" \
   --remote-debugging-address=127.0.0.1 \
   --remote-debugging-port="$TESTAGENT_CDP_PORT" \
@@ -91,7 +91,7 @@ lsof -nP -iTCP:29324 -sTCP:LISTEN
 SAND_HTTPS_PROXY='http://127.0.0.1:18080' \
 SAND_NO_PROXY='localhost,127.0.0.1,::1' \
 SAND_USER_DATA_DIR="$TESTAGENT_OBS_ROOT" \
-'/Users/bytedance/Documents/testAgent.app/Contents/MacOS/Grok Bot' \
+'~/Documents/testAgent.app/Contents/MacOS/Grok Bot' \
   --user-data-dir="$TESTAGENT_OBS_ROOT" \
   --remote-debugging-address=127.0.0.1 \
   --remote-debugging-port="$TESTAGENT_CDP_PORT" \
@@ -227,8 +227,8 @@ npx -y rea-agents@6.4.0 observe-javascript-runtime \
 ```json
 {
   "executable_path": "/Applications/Electron.app/Contents/MacOS/Electron",
-  "application_path": "/Users/bytedance/Documents/testAgent.app/Contents/Resources/app.asar",
-  "application_root": "/Users/bytedance/Documents/testAgent.app/Contents/Resources",
+  "application_path": "~/Documents/testAgent.app/Contents/Resources/app.asar",
+  "application_root": "~/Documents/testAgent.app/Contents/Resources",
   "args": [
     "--user-data-dir=/private/tmp/testagent-observe.EXAMPLE"
   ],

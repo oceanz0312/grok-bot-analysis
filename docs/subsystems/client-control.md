@@ -1,7 +1,7 @@
 # Grok Bot 0.70.2 客户端控制面技术方案还原
 
 > 产物：静态只读分析（不运行应用、不发网络请求）  
-> 证据根：仓库根目录（`../../`）  
+> 证据根：`../../evidence/artifacts/`（解包与格式化产物）  
 > 版本：`0.70.2` / `productName: Grok Bot` / `name: sand` / Electron 入口 `dist/electron-main/main.cjs`  
 > 证据标签：`[O]` 观察（附路径:行号）· `[I]` 推断 · `[U]` 未知  
 

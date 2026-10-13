@@ -1,6 +1,6 @@
 # testAgent 客户端接口与信任边界地图
 
-当前安装目标是 `/Applications/testAgent.app`；本文使用的格式化静态证据位于 `/Users/bytedance/Documents/testAgent-analysis`，它来自此前 `/Users/bytedance/Documents/testAgent.app` 副本的解包结果。现已核验 `/Applications/testAgent.app` 与 `/Applications/Grok Bot.app` 的 `app.asar` SHA-256 均为 `8dd7b6c4a58439d626a9a7b3766982b7c725db2bc1f6ff68a29fc1ec62ca4cf7`，并与本分析摘要记录一致，因此可将当前安装包与该解包证据视为同一静态版本。本附录的 301/12 接口枚举步骤未再次启动应用或触发接口；运行时观察另见 [动态 API 矩阵](dynamic-api-matrix.md)。
+当前安装目标是 `/Applications/testAgent.app`；本文使用的格式化静态证据位于 `<分析工作目录>`，它来自此前 `~/Documents/testAgent.app` 副本的解包结果。现已核验 `/Applications/testAgent.app` 与 `/Applications/Grok Bot.app` 的 `app.asar` SHA-256 均为 `8dd7b6c4a58439d626a9a7b3766982b7c725db2bc1f6ff68a29fc1ec62ca4cf7`，并与本分析摘要记录一致，因此可将当前安装包与该解包证据视为同一静态版本。本附录的 301/12 接口枚举步骤未再次启动应用或触发接口；运行时观察另见 [动态 API 矩阵](dynamic-api-matrix.md)。
 
 核心结论：
 
@@ -42,7 +42,7 @@ flowchart LR
     LE --> CU
 ~~~
 
-RPC declaration 由 [Ce](formatted/electron-preload/preload.cjs#L518) 构造，Renderer 侧客户端由 [Fe](formatted/electron-preload/preload.cjs#L562) 生成，底层 transport 是 ipcRenderer.invoke/on 的安全包装，见 [fn](formatted/electron-preload/preload.cjs#L352)。Main 侧为每个调用验证可信顶层窗口并分派 handler，见 [Main edge server](formatted/electron-main/main-app.cjs#L109320)。
+RPC declaration 由 [Ce](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L518) 构造，Renderer 侧客户端由 [Fe](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L562) 生成，底层 transport 是 ipcRenderer.invoke/on 的安全包装，见 [fn](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L352)。Main 侧为每个调用验证可信顶层窗口并分派 handler，见 [Main edge server](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L109320)。
 
 需要严格区分六类边界：
 
@@ -57,7 +57,7 @@ RPC declaration 由 [Ce](formatted/electron-preload/preload.cjs#L518) 构造，R
 
 ## 2. main edge 的精确计数与暴露差异
 
-声明起点见 [preload main schema](formatted/electron-preload/preload.cjs#L4272)。按顶层 method 声明机械提取的结果是：
+声明起点见 [preload main schema](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4272)。按顶层 method 声明机械提取的结果是：
 
 - 有序条目数：301
 - 唯一方法名：301
@@ -65,7 +65,7 @@ RPC declaration 由 [Ce](formatted/electron-preload/preload.cjs#L518) 构造，R
 - 17 类计数：15 + 24 + 19 + 14 + 18 + 15 + 7 + 19 + 8 + 17 + 2 + 20 + 36 + 32 + 8 + 37 + 10 = 301
 - 有序方法名清单的 SHA-256：11180089c9f3bfa678b0d308273ef5f1308bcbab64b3a2faccd4642da55d069e
 
-但暴露阶段存在一个安全变换，见 [preload surface assembly](formatted/electron-preload/preload.cjs#L5014)：
+但暴露阶段存在一个安全变换，见 [preload surface assembly](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L5014)：
 
 1. Fe(os, Ss) 先生成 301 个声明方法和通用 subscribe。
 2. stageAttachmentPath 被解构移出，不进入 desktop.main。
@@ -80,23 +80,23 @@ RPC declaration 由 [Ce](formatted/electron-preload/preload.cjs#L518) 构造，R
 
 | # | 业务域 | 数量 | 声明锚点 | 主要后续平面 | 请求/返回语义摘要 |
 |---:|---|---:|---|---|---|
-| 1 | 导航、Canvas、Document、Library、反馈 | 15 | [preload:4274](formatted/electron-preload/preload.cjs#L4274) | 本地 Shell + 中央 AgentStore/GrokBot | URL、locator、可见性、文档源码、资源名；返回分享、正文、权限、列表或操作结果 |
-| 2 | 窗口、Presence、主题、语言和桌面偏好 | 24 | [preload:4293](formatted/electron-preload/preload.cjs#L4293) | 主要为 Main 本地；Presence 可继续进入 Coordinator | 无参状态读取、布尔偏好、窗口动作、当前 Agent/presence |
-| 3 | 网络、更新、Box 状态、Onboarding、时区 | 19 | [preload:4321](formatted/electron-preload/preload.cjs#L4321) | Main 本地 + Box-scoped Gateway + 中央设置 | tunnel/proxy 开关、update track、迁移阶段、onboarding 标记、时区覆盖 |
-| 4 | 自动审阅、本机工具策略、审批、头像 | 14 | [preload:4340](formatted/electron-preload/preload.cjs#L4340) | Main policy store + 中央/Box 同步 + Local Exec；头像生成走 AI 服务 | permission、approvalId、action、recipient、machineId、头像描述 |
-| 5 | 附件与云电脑生命周期 | 18 | [preload:4375](formatted/electron-preload/preload.cjs#L4375) | 本地 staging + 对象存储/中央 + Coordinator/Box | path/bytes、预上传、提交、caption、重建/升级/重连 |
-| 6 | 实验、Feature Flag、RPC trace、Transcript tail | 15 | [preload:4432](formatted/electron-preload/preload.cjs#L4432) | Main experiment/telemetry + 本地 transcript store | gate exposure、override command、trace window、agent tail limit |
-| 7 | 公共模板市场与 Slack App 生命周期 | 7 | [preload:4466](formatted/electron-preload/preload.cjs#L4466) | 中央 GrokBot/connector | shareId、agentId、Slack team、安装/重装/卸载 |
-| 8 | Agent、Team、Session、Profile、ACL、Meeting | 19 | [preload:4482](formatted/electron-preload/preload.cjs#L4482) | 中央 GrokBot | Agent 元数据、发布状态、成员/经理、meeting 可见性、带 state token 的 ACL 更新 |
-| 9 | Agent Plugin、Skill、Memory | 8 | [preload:4533](formatted/electron-preload/preload.cjs#L4533) | 中央 GrokBot + MCP 配置 | plugin 清单/变量、skill 内容和文件、个人 memory、promote 到 team |
-| 10 | Vault、Email、Secret、Agent File、Sidebar | 17 | [preload:4573](formatted/electron-preload/preload.cjs#L4573) | 中央 GrokBot/AgentStore + 本地 secret bridge + Box host settings | credential、邮箱、secret、文件 bytes、pin/sidebar sections |
-| 11 | STT / TTS | 2 | [preload:4609](formatted/electron-preload/preload.cjs#L4609) | 中央 AI/Voice manager | audio + MIME/language；text + voiceId |
-| 12 | Cursor 账号、机器和 Passkey enrollment | 20 | [preload:4611](formatted/electron-preload/preload.cjs#L4611) | Main account manager + 中央 Dashboard + OS WebAuthn | 登录 flight、多账号、头像、machine、六位码、credentialId |
-| 13 | Team、Usage、Entitlement、Voice harness、Billing、SCM、Passkey ceremony | 36 | [preload:4631](formatted/electron-preload/preload.cjs#L4631) | 主要为中央 Dashboard/GrokBot；浏览器/OS 完成 OAuth 和 ceremony | teamId、邀请、usage、wallet、voice dial、SCM callback、spend limit |
-| 14 | Telemetry、Cloud Agent 跳转、Link metadata、MCP App staging | 32 | [preload:4725](formatted/electron-preload/preload.cjs#L4725) | Main telemetry → Analytics/Sentry/Statsig；少量本地/附件服务 | 结构化 report、bcId、URL preview、HTML/CSP staging |
-| 15 | 用户 Secret key 列表与客户端持久化 | 8 | [preload:4764](formatted/electron-preload/preload.cjs#L4764) | Main 本地安全存储/持久化 | key/value、include/exclude、prefix、本地存储迁移 |
-| 16 | Credential broker、MCP 管理、Finance、开发 Box 控制 | 37 | [preload:4774](formatted/electron-preload/preload.cjs#L4774) | Main OAuth/MCP manager + 中央 Dashboard/GrokBot；attachProdBox 仅开发构建 | credential approval、OAuth、catalog/install、tool policy、账户/金融连接 |
-| 17 | Messages、Chrome Cookie、Cookie grant、离会 | 10 | [preload:4837](formatted/electron-preload/preload.cjs#L4837) | Main 随包 CUGrokBotService + 本地 Chrome/Keychain + Box 注入/中央设置；meeting manager | OS 权限、recipient grant、cookie allow item/origin grant、meetingId |
+| 1 | 导航、Canvas、Document、Library、反馈 | 15 | [preload:4274](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4274) | 本地 Shell + 中央 AgentStore/GrokBot | URL、locator、可见性、文档源码、资源名；返回分享、正文、权限、列表或操作结果 |
+| 2 | 窗口、Presence、主题、语言和桌面偏好 | 24 | [preload:4293](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4293) | 主要为 Main 本地；Presence 可继续进入 Coordinator | 无参状态读取、布尔偏好、窗口动作、当前 Agent/presence |
+| 3 | 网络、更新、Box 状态、Onboarding、时区 | 19 | [preload:4321](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4321) | Main 本地 + Box-scoped Gateway + 中央设置 | tunnel/proxy 开关、update track、迁移阶段、onboarding 标记、时区覆盖 |
+| 4 | 自动审阅、本机工具策略、审批、头像 | 14 | [preload:4340](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4340) | Main policy store + 中央/Box 同步 + Local Exec；头像生成走 AI 服务 | permission、approvalId、action、recipient、machineId、头像描述 |
+| 5 | 附件与云电脑生命周期 | 18 | [preload:4375](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4375) | 本地 staging + 对象存储/中央 + Coordinator/Box | path/bytes、预上传、提交、caption、重建/升级/重连 |
+| 6 | 实验、Feature Flag、RPC trace、Transcript tail | 15 | [preload:4432](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4432) | Main experiment/telemetry + 本地 transcript store | gate exposure、override command、trace window、agent tail limit |
+| 7 | 公共模板市场与 Slack App 生命周期 | 7 | [preload:4466](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4466) | 中央 GrokBot/connector | shareId、agentId、Slack team、安装/重装/卸载 |
+| 8 | Agent、Team、Session、Profile、ACL、Meeting | 19 | [preload:4482](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4482) | 中央 GrokBot | Agent 元数据、发布状态、成员/经理、meeting 可见性、带 state token 的 ACL 更新 |
+| 9 | Agent Plugin、Skill、Memory | 8 | [preload:4533](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4533) | 中央 GrokBot + MCP 配置 | plugin 清单/变量、skill 内容和文件、个人 memory、promote 到 team |
+| 10 | Vault、Email、Secret、Agent File、Sidebar | 17 | [preload:4573](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4573) | 中央 GrokBot/AgentStore + 本地 secret bridge + Box host settings | credential、邮箱、secret、文件 bytes、pin/sidebar sections |
+| 11 | STT / TTS | 2 | [preload:4609](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4609) | 中央 AI/Voice manager | audio + MIME/language；text + voiceId |
+| 12 | Cursor 账号、机器和 Passkey enrollment | 20 | [preload:4611](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4611) | Main account manager + 中央 Dashboard + OS WebAuthn | 登录 flight、多账号、头像、machine、六位码、credentialId |
+| 13 | Team、Usage、Entitlement、Voice harness、Billing、SCM、Passkey ceremony | 36 | [preload:4631](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4631) | 主要为中央 Dashboard/GrokBot；浏览器/OS 完成 OAuth 和 ceremony | teamId、邀请、usage、wallet、voice dial、SCM callback、spend limit |
+| 14 | Telemetry、Cloud Agent 跳转、Link metadata、MCP App staging | 32 | [preload:4725](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4725) | Main telemetry → Analytics/Sentry/Statsig；少量本地/附件服务 | 结构化 report、bcId、URL preview、HTML/CSP staging |
+| 15 | 用户 Secret key 列表与客户端持久化 | 8 | [preload:4764](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4764) | Main 本地安全存储/持久化 | key/value、include/exclude、prefix、本地存储迁移 |
+| 16 | Credential broker、MCP 管理、Finance、开发 Box 控制 | 37 | [preload:4774](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4774) | Main OAuth/MCP manager + 中央 Dashboard/GrokBot；attachProdBox 仅开发构建 | credential approval、OAuth、catalog/install、tool policy、账户/金融连接 |
+| 17 | Messages、Chrome Cookie、Cookie grant、离会 | 10 | [preload:4837](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4837) | Main 随包 CUGrokBotService + 本地 Chrome/Keychain + Box 注入/中央设置；meeting manager | OS 权限、recipient grant、cookie allow item/origin grant、meetingId |
 
 ## 4. 301 个方法完整枚举
 
@@ -310,7 +310,7 @@ leaveMeeting
 
 ## 5. desktop.boot
 
-desktop.boot 来自同步 IPC sand:boot-snapshot-sync。Main 返回的原始快照见 [main-core boot snapshot](formatted/electron-main/main-core.cjs#L21425)，字段包括：
+desktop.boot 来自同步 IPC sand:boot-snapshot-sync。Main 返回的原始快照见 [main-core boot snapshot](../../evidence/artifacts/formatted/electron-main/main-core.cjs#L21425)，字段包括：
 
 | 字段 | 含义 |
 |---|---|
@@ -331,7 +331,7 @@ Preload 通过解构移除 mainEdge，再把其余字段作为 desktop.boot 暴�
 
 ## 6. desktop.environment
 
-[environment 暴露](formatted/electron-preload/preload.cjs#L5043) 是无副作用的进程/构建信息：
+[environment 暴露](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L5043) 是无副作用的进程/构建信息：
 
 | 字段 | 静态语义 |
 |---|---|
@@ -343,7 +343,7 @@ Preload 通过解构移除 mainEdge，再把其余字段作为 desktop.boot 暴�
 
 ## 7. desktop.local
 
-[local methods](formatted/electron-preload/preload.cjs#L5054) 共 5 个：
+[local methods](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L5054) 共 5 个：
 
 | 方法 | 实现和意义 |
 |---|---|
@@ -357,7 +357,7 @@ desktop.local 只是“Preload 直接提供的少量本地辅助面”，不能�
 
 ## 8. coordinatorPort
 
-Preload bridge 见 [single-consumer bridge](formatted/electron-preload/preload.cjs#L4935)，暴露形态为：
+Preload bridge 见 [single-consumer bridge](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4935)，暴露形态为：
 
 ~~~text
 coordinatorPort.claim(owner) -> null | {
@@ -374,7 +374,7 @@ coordinatorPort.claim(owner) -> null | {
 4. release 只解除当前 owner；旧 owner 之后不能再 request。
 5. 收到端口后，Preload 只暴露 postMessage、close、start 和受限的 message/close listener，不暴露原始 ipcRenderer。
 
-Main 通过 utilityProcess.fork 启动 Coordinator，并创建 control、renderer-data、main-data 三条 MessagePort，见 [Coordinator launch](formatted/electron-main/main-app.cjs#L100085)。端口请求、重启后的替换和可信 sender 检查见 [renderer port broker](formatted/electron-main/main-app.cjs#L100273)。
+Main 通过 utilityProcess.fork 启动 Coordinator，并创建 control、renderer-data、main-data 三条 MessagePort，见 [Coordinator launch](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L100085)。端口请求、重启后的替换和可信 sender 检查见 [renderer port broker](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L100273)。
 
 这条通道承担 Agent runtime/domain data，不应被描述成中央 RPC 或 Box-scoped Gateway 本身。更准确的链路是：
 
@@ -387,19 +387,19 @@ Renderer domain client
 
 ## 9. sandRenderTrace
 
-[sandRenderTrace implementation](formatted/electron-preload/preload.cjs#L4996) 只暴露 postMessage：
+[sandRenderTrace implementation](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L4996) 只暴露 postMessage：
 
 - 第一次 postMessage 时惰性创建 MessageChannel。
 - port2 通过 sand:render-trace-port transfer 给 Main。
 - 后续 payload 都走保留的 port1，不为每条 trace 创建 IPC invoke。
 - 没有业务返回值、重试或 request/response envelope，是单向 telemetry pipe。
-- Main 只接受主窗口 mainFrame 投递的端口，其他 frame 的端口直接关闭，见 [render trace receiver](formatted/electron-main/main-core.cjs#L31644)。
+- Main 只接受主窗口 mainFrame 投递的端口，其他 frame 的端口直接关闭，见 [render trace receiver](../../evidence/artifacts/formatted/electron-main/main-core.cjs#L31644)。
 
 因此 startRpcTraceWindow 是“控制是否开启/采样 RPC trace”的 main RPC，而 sandRenderTrace 是高频 trace 数据的独立传输面，两者职责不同。
 
 ## 10. desktopMount 的 12 个方法
 
-声明见 [desktop-mount schema](formatted/electron-preload/preload.cjs#L868)，Main 实现与 sender role 校验见 [desktop-mount runtime](formatted/electron-main/main-app.cjs#L101127)。
+声明见 [desktop-mount schema](../../evidence/artifacts/formatted/electron-preload/preload.cjs#L868)，Main 实现与 sender role 校验见 [desktop-mount runtime](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L101127)。
 
 | 调用方角色 | 方法 | 作用 |
 |---|---|---|
@@ -430,14 +430,14 @@ endPanelMove
 
 ## 11. 从声明方法推测后端实现时的证据边界
 
-Main handler 总装配入口见 [p8e](formatted/electron-main/main-app.cjs#L108085)。由此可以可靠判断“Renderer 请求先落到哪个 Main manager”；但仅凭 preload 名字不能把每个方法强行映射成一个服务端 endpoint：
+Main handler 总装配入口见 [p8e](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L108085)。由此可以可靠判断“Renderer 请求先落到哪个 Main manager”；但仅凭 preload 名字不能把每个方法强行映射成一个服务端 endpoint：
 
 - 纯本地：窗口、主题、语言、客户端持久化、启动 timing 等可能完全不出机。
 - 本地后再同步：local-tool permission、host sidebar、Messages enabled 等会先写本地，再尝试同步 Box 或中央状态。
 - 中央 RPC：账号、团队、计费、Agent ACL、MCP catalog、Vault、Email 等主要由 Main manager 调用 Dashboard/GrokBot/Ai/AgentStore ConnectRPC。
 - Box-scoped Gateway：Host settings、Box 状态、部分附件/电脑操作通常经 Coordinator 或 Main 的 Box access/recovery manager；其作用域属于某个 Box，但物理部署位置未知。
-- CUGrokBotService：随 App 打包，Main 以 Messages/Contacts verbs 调用，Local Exec 也将其 client 作为 `messages-op` 默认 executor；见 [Main sidecar selection](formatted/electron-main/main-app.cjs#L79554)、[verb map](formatted/electron-main/main-app.cjs#L79739) 和 [Local Exec default](formatted/local-exec-daemon/main.cjs#L128112)。
-- Local Exec CUCursorService：GUI CUA 默认寻找用户目录下的外置 Cursor Computer Use.app，通过 service.json 提供的 Unix socket 做 newline JSON-RPC；见 [service discovery](formatted/local-exec-daemon/main.cjs#L120627) 和 [override variables](formatted/local-exec-daemon/main.cjs#L120801)。当前 App/分析产物未包含该外置 artifact，因此实现语言未知。
+- CUGrokBotService：随 App 打包，Main 以 Messages/Contacts verbs 调用，Local Exec 也将其 client 作为 `messages-op` 默认 executor；见 [Main sidecar selection](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L79554)、[verb map](../../evidence/artifacts/formatted/electron-main/main-app.cjs#L79739) 和 [Local Exec default](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L128112)。
+- Local Exec CUCursorService：GUI CUA 默认寻找用户目录下的外置 Cursor Computer Use.app，通过 service.json 提供的 Unix socket 做 newline JSON-RPC；见 [service discovery](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L120627) 和 [override variables](../../evidence/artifacts/formatted/local-exec-daemon/main.cjs#L120801)。当前 App/分析产物未包含该外置 artifact，因此实现语言未知。
 - Chrome cookie：由 Main 的 Chrome/Keychain 读取、选择与 Box 注入路径处理，不应归入上述任一 CUA helper。
 - 混合事务：一个 desktop.main 方法可能组合本地校验、中央更新、Box mirror、telemetry，不能用一个 URL 代表完整语义。
 

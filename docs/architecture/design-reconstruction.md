@@ -1450,7 +1450,7 @@ erDiagram
 | D10 | 语音是否经服务端转发 | 不经转发。中央只签发一次性凭据，客户端直连 `wss://api.x.ai/` |
 | D11 | 默认发送与订阅路径 | 中央。抓包显示发送走 `SendGrokBotUserMessage`（失败后用 `GetGrokBotSendStatus` 查询），订阅走 `WatchGrokBotTranscripts`，本机中继走 `WatchGrokBotUserComputerRequests`；Box 网关只承担资源接口和事件 |
 
-**REA 静态分析结果**（摘要见 [`rea/app-asar-summary.json`](rea/app-asar-summary.json)，证据 ID `ev_4930858f…`，耗时 1 分 51 秒）：
+**REA 静态分析结果**（摘要见 [`rea/app-asar-summary.json`](../../evidence/rea/app-asar-summary.json)，证据 ID `ev_4930858f…`，耗时 1 分 51 秒）：
 
 - 规模：616 个文件，600 个 JS 全部解析成功，5744 条发现。
 - 结构：
